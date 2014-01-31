@@ -2,13 +2,13 @@ import pickle
 import os
 
 def pickle_obj(filename, obj):
-	assert isinstance(filename, str), "First argument must be a string"
+	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))
 	with open(filename,'w') as f:
 		pickle.dump(obj, f)
 
 
 def unpickle_obj(filename):
-	assert isinstance(filename, str), "First argument must be a string"
+	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))
 	assert os.path.isfile(filename), "File pickle does not exist."
 
 	obj = None

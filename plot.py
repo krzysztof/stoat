@@ -28,7 +28,7 @@ def single_boxplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1
 			sorters[idx]=lambda l: sorted(l,key=lambda i:i[0], cmp=make_comp(list(sorter)))
 	v1_sorter, v2_sorter = sorters
 
-	fig = plt.figure(figsize=(18,8))
+	fig = plt.figure(figsize=(25,15))
 	ax = fig.add_subplot(111)
 	ax.set_title(title)
 	ax.set_xlabel(x_label)

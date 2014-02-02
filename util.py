@@ -44,11 +44,10 @@ def nested_dict(keys_list):
 		return []
 	d = {}
 	for k in keys_list[0]:
-		d[k] = make_nested_dict(keys_list[1:])
+		d[k] = nested_dict(keys_list[1:])
 	return d
 
-
-def shape_dict(data, f_idx, x_idx, m_idx):
+def shape_dict_bak(data, f_idx, x_idx, m_idx):
 	shaped_dict = {}
 	fs = list(set(d[0][f_idx] for d in data))
 	for f in fs:
@@ -64,3 +63,19 @@ def shape_dict(data, f_idx, x_idx, m_idx):
 				shaped_dict[f][x][m] = ds[0][1]
 	return shaped_dict
 
+def shape_dict(data, *args):
+	shaped_dict = {}
+	assert all(isinstance(arg, int) for arg in args), "Positional arguments must be interegers"
+	assert len(args) > 0, "At least one positional argument (int) is required"
+	def make_shape(idxs, l):
+		if len(idxs)==0:
+			orig_type = type(l[0][1])
+			return orig_type(sum([list(li[1]) for li in l], []))
+		idx = idxs[0]
+		keys = list(set(li[0][idx] for li in l))
+		d = {}
+		for k in keys:
+			d[k] = make_shape(idxs[1:], [li for li in l if li[0][idx]==k])
+		return d
+	
+	return make_shape(args, data)

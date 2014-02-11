@@ -39,13 +39,25 @@ def single_boxplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1
 		for kk, vv in v2_sorter(v.items()):
 			box_data.append(vv)
 			xticks.append((k,kk))
-	plt.boxplot(box_data)
+	bp = plt.boxplot(box_data)
 	ax.set_xticklabels([tick_format.format(v1=t,v2=tt) for t, tt in xticks])
 
-def multi_boxplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1}/{v2}", x_label="X", y_label="Y", plots_prefix="plot"):
-	for k,v in shaped_dict.iteritems():
-		single_boxplot(v, v1_sorter=v1_sorter, v2_sorter=v2_sorter, tick_format=tick_format, x_label=x_label, y_label=y_label, title=str(k))
-		plt.savefig("%s_%s"%(plots_prefix, k));
+	boxColors = ["royalblue", "green"]
+	numBoxes = len(box_data) 
+	for i in range(numBoxes):
+		box = bp['boxes'][i]
+		boxX = []
+		boxY = []
+		for j in range(4):
+			boxX.append(box.get_xdata()[j])
+			boxY.append(box.get_ydata()[j])
+		boxCoords = zip(boxX, boxY)
+		# Alternate between Dark Khaki and Royal Blue
+		k = i % 2
+		boxPolygon = Polygon(boxCoords, facecolor=boxColors[k])
+		ax.add_patch(boxPolygon)
+	return ax
+
 
 # Generate some data from five different probability distributions,
 # each with different characteristics. We want to play with how an IID

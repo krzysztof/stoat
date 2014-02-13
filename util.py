@@ -1,5 +1,19 @@
-import pickle
+import pickle, json
 import os
+
+def json_obj(filename, obj):
+	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))
+	with open(filename,'w') as f:
+		json.dump(obj, f)
+
+def unjson_obj(filename):
+	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))
+	assert os.path.isfile(filename), "File pickle does not exist."
+
+	obj = None
+	with open(filename, 'r') as f:
+		obj = json.load(f)
+	return obj
 
 def pickle_obj(filename, obj):
 	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))

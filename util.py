@@ -1,5 +1,29 @@
 import pickle, json
 import os
+import threading, sys
+
+class TimeoutError(Exception): pass
+
+def timelimit(limit):
+	from multiprocessing import Process, Queue
+	def wrapper(func):
+		def inner(*args, **kwargs):
+			def bar(q):
+				out = func(*args, **kwargs)
+				q.put(out)
+			q = Queue()
+			p = Process(target=bar, args=[q,])
+			p.start()
+			p.join(limit)
+			if p.is_alive():
+				p.terminate()
+				p.join()
+				raise TimeoutError, "Reached the timelimit of %s seconds" % (limit)
+
+			else:
+				return q.get()
+		return inner
+	return wrapper
 
 def json_obj(filename, obj):
 	assert isinstance(filename, str), "First argument must be a string, got %s instead" %(type(filename))
@@ -29,7 +53,6 @@ def unpickle_obj(filename):
 	with open(filename, 'r') as f:
 		obj = pickle.load(f)
 	return obj
-
 
 def nested_dict(keys_list):
 	"""

@@ -4,6 +4,11 @@ import threading, sys
 
 class TimeoutError(Exception): pass
 
+def printf(string):
+	"""Print something and flushes the output right away."""
+	sys.stdout.write(string)
+	sys.stdout.flush()
+
 def timelimit(limit):
 	from multiprocessing import Process, Queue
 	def wrapper(func):
@@ -54,34 +59,22 @@ def unpickle_obj(filename):
 		obj = pickle.load(f)
 	return obj
 
-def nested_dict(keys_list):
+def nested_dict(keys_list, value=[]):
 	"""
 	Returns a nested dictionary, with the final value being empty list
 
-	make_nested_dict([[1,2,3],["a","b","c"]])
+	make_nested_dict([[1,2],["a","b"]], value=[])
 	d = {
 			1:{"a":[], "b":[], "c":[]},
 			2:{"a":[], "b":[], "c":[]},
-			3:{"a":[], "b":[], "c":[]},
-		}
-	make_nested_dict([[1,2],'xy',[10,20]])
-
-	d = {
-		1:	{
-			'x': { 10: [], 20: [], },
-			'y': { 10: [], 20: [], },
-			},
-		2:	{
-			'x': { 10: [], 20: [], },
-			'y': { 10: [], 20: [], },
-			},
 		}
 	"""
+
 	if len(keys_list) == 0:
-		return []
+		return type(value)(value)
 	d = {}
 	for k in keys_list[0]:
-		d[k] = nested_dict(keys_list[1:])
+		d[k] = nested_dict(keys_list[1:], value=value)
 	return d
 
 def shape_dict_bak(data, f_idx, x_idx, m_idx):

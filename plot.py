@@ -7,6 +7,58 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 
+def simple_scatter(points):
+	#from mpl_toolkits.mplot3d import Axes3D
+	xs = zip(*points)
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	ax.scatter(*xs[:3], c='r', marker='o')
+	ax.set_xlim(0.0, 1.0)
+	ax.set_ylim(0.0, 1.0)
+	ax.set_zlim(0.0, 1.0)
+	ax.set_xlabel("$X_1$")
+	ax.set_ylabel("$X_2$")
+	ax.set_zlabel("$X_3$")
+	plt.show()
+
+
+def single_lineplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1}/{v2}", title="Title", x_label="X", y_label="Y"):
+	import inspect
+
+	# Identity mapping
+	sorters = [v1_sorter, v2_sorter]
+	for idx, sorter in enumerate(sorters):
+		if sorter is None:
+			sorters[idx] = lambda k: k
+		# Explicing sorting function
+		elif inspect.isfunction(sorter):
+			pass
+		else:
+			def make_comp(order):
+				def comp(x, y):
+					for v in (x, y):
+						if v not in order:
+							raise Exception("Reference ordering %s does not contain %s" % (order, v))
+					return order.index(x) - order.index(y)
+			sorters[idx] = lambda l: sorted(l, key=lambda i: i[0], cmp=make_comp(list(sorter)))
+	v1_sorter, v2_sorter = sorters
+
+	fig = plt.figure(figsize=(25, 15))
+	ax = fig.add_subplot(111)
+	ax.set_title(title)
+	ax.set_xlabel(x_label)
+	ax.set_ylabel(y_label)
+	xticks = []
+	box_data = []
+	for k, v in v1_sorter(shaped_dict.items()):
+		for kk, vv in v2_sorter(v.items()):
+			box_data.append(vv)
+			xticks.append((k, kk))
+	plt.plot(box_data)
+	ax.set_xticklabels([tick_format.format(v1=t, v2=tt) for t, tt in xticks])
+	return ax
+
+
 def single_boxplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1}/{v2}", title="Title", x_label="X", y_label="Y"):
 	import inspect
 
@@ -14,18 +66,18 @@ def single_boxplot(shaped_dict, v1_sorter=None, v2_sorter=None, tick_format="{v1
 	sorters = [v1_sorter, v2_sorter]
 	for idx, sorter in enumerate(sorters):
 		if sorter is None:
-			sorters[idx] = lambda k:k
+			sorters[idx] = lambda k: k
 		# Explicing sorting function
 		elif inspect.isfunction(sorter):
 			pass
 		else:
 			def make_comp(order):
 				def comp(x, y):
-					for v in (x,y):
+					for v in (x, y):
 						if v not in order:
-							raise Exception, "Reference ordering %s does not contain %s" % (ordering, v)
+							raise Exception("Reference ordering %s does not contain %s" % (order, v))
 					return order.index(x) - order.index(y)
-			sorters[idx]=lambda l: sorted(l,key=lambda i:i[0], cmp=make_comp(list(sorter)))
+			sorters[idx] = lambda l: sorted(l, key=lambda i: i[0], cmp=make_comp(list(sorter)))
 	v1_sorter, v2_sorter = sorters
 
 	fig = plt.figure(figsize=(25,15))
@@ -200,5 +252,5 @@ if __name__ == "__main__":
 	methods = ["Method A", "Method B", "Method C"]
 	data = [[0.1*random(), 0.3*random(), 0.5*random()] for i in range(len(experiments)*len(methods))]
 	boxColors = ["red", "green", "royalblue", "darkkhaki"]
-	plt = make_boxplot(data, experiments, boxColors, methods, 'Boxplot', top=1.0)	
+	make_boxplot(data, experiments, boxColors, methods, 'Boxplot', top=1.0)	
 	plt.show()

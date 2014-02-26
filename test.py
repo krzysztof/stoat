@@ -37,6 +37,19 @@ class TestDataDict(unittest.TestCase):
 		}
 		self.assertEquals(shape_dict(self.data0, 2, 0, 1), ref_2_0_1)
 
+		ref_0_1 = {
+			'a1': { 0.5: (1, 2,), 0.6: (3, 4,), },
+			'a2': { 0.5: (5, 6,), 0.6: (7, 8,), }
+		}
+		self.assertEquals(shape_dict(self.data0, 0, 1), ref_0_1)
+
+		ref_0 = {
+			'a1': (1, 2, 3, 4, ),
+			'a2': (5, 6, 7, 8, ),
+		}
+		self.assertEquals(shape_dict(self.data0, 0), ref_0)
+
+
 class TestNestedDict(unittest.TestCase):
 
 	def test_basic(self):
